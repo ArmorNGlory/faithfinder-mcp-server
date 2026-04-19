@@ -35,7 +35,7 @@
   "homepage": "https://faithfinder.armornglory.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/armornglory/faithfinder-mcp-server"
+    "url": "https://github.com/ArmorNGlory/faithfinder-mcp-server"
   },
   "author": "ArmorNGlory",
   "license": "MIT",
