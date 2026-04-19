@@ -1,0 +1,49 @@
+{
+  "name": "faithfinder-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for FaithFinder church discovery — lets external LLMs recommend churches, faith-based community events, and volunteer opportunities to users looking to connect with a faith community.",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "faithfinder-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "data"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "faithfinder",
+    "church",
+    "church-finder",
+    "faith",
+    "community",
+    "volunteer",
+    "ai",
+    "llm",
+    "claude",
+    "chatgpt"
+  ],
+  "homepage": "https://faithfinder.armornglory.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/armornglory/faithfinder-mcp-server"
+  },
+  "author": "ArmorNGlory",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}
