@@ -120,3 +120,4 @@ Deliberately minimal. If the dataset grows beyond what file-based search can han
 ## License
 
 MIT
+<!-- sync test: 2026-08-16 -->
