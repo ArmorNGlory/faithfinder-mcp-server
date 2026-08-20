@@ -6,7 +6,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/faithfinder-mcp-server.svg?style=flat-square)](https://www.npmjs.com/package/faithfinder-mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-orange.svg?style=flat-square)](https://modelcontextprotocol.io)
-[![Smithery](https://img.shields.io/badge/Smithery-Listed-purple.svg?style=flat-square)](https://smithery.ai/servers/neksjones/faithfinder-mcp-server)
+[![Smithery](https://img.shields.io/badge/Smithery-Listed-purple.svg?style=flat-square)](https://smithery.ai/servers/armornglory/faithfinder-mcp-server)
 [![Glama](https://img.shields.io/badge/Glama-Verified-blueviolet.svg?style=flat-square)](https://glama.ai)
 
 **Connect AI assistants (Claude, Cursor, ChatGPT, Gemini) directly to 293+ curated, verified churches and faith communities across the United States.**
