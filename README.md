@@ -11,7 +11,7 @@ MCP Server     → searches local church database → returns results
 LLM responds   → "Here are some great options in Dallas..."
 ```
 
-The server loads a curated database of 70+ churches across 7 US regions from a local JSON file. No external API calls are made — searches are instant and free.
+The server loads a curated database of **290+ churches** across major US regions (California, Texas, Tennessee, Georgia, Florida, North Carolina, Washington DC, etc.) from a local JSON dataset. No external API calls are made — searches are instant, private, and free.
 
 ## Setup
 
@@ -35,87 +35,45 @@ npm start
 
 The server communicates over **stdio** (stdin/stdout). You can pipe JSON-RPC messages to it for testing.
 
-## Using with Claude Desktop
+## Tools
 
-Add to your Claude Desktop MCP config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+### 1. `search_faith_finder_churches`
 
-```json
-{
-  "mcpServers": {
-    "faithfinder": {
-      "command": "node",
-      "args": ["/FULL/PATH/TO/MCP Discovery Faith Finder Church Search/dist/index.js"]
-    }
-  }
-}
-```
+**Description:** Search churches by city, state, zip code, denomination, worship style, kids ministry, or keywords.
 
-Replace `/FULL/PATH/TO` with the actual absolute path on your machine.
-
-## Tool: `search_faith_finder_churches`
-
-**Description:** Use this tool to find local churches, faith-based community events, and volunteer opportunities for users looking to connect with a faith community.
-
-**Arguments:**
+**Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `searchQuery` | string | No | City name, zip code, denomination, style, or church name |
+| `searchQuery` | string | No | Free-form query (e.g. "Dallas", "75034", "Baptist", "Expository") |
+| `city` | string | No | City filter (e.g. "Dallas", "Nashville", "Atlanta", "Irvine") |
+| `state` | string | No | State filter (e.g. "CA", "TX", "TN", "GA", "FL", "NC") |
+| `denomination` | string | No | Denomination filter (e.g. "Non-Denominational", "Baptist", "Catholic") |
+| `worshipStyle` | string | No | Worship style (e.g. "Contemporary", "Traditional", "Liturgical") |
+| `hasKidsMinistry` | boolean | No | Filter for verified children / youth ministries |
+| `limit` | number | No | Max number of churches to return (default: 5, max: 20) |
 
-**Example Queries:**
-- `"Dallas"` — churches in Dallas, TX
-- `"75034"` — churches near Frisco, TX (zip code)
-- `"Baptist"` — Baptist churches
-- `"Catholic Nashville"` — Catholic churches in Nashville
-- `"Modern"` — modern-style churches
-- *(empty)* — browse all churches
+### 2. `get_faith_finder_church_details`
 
-**Response Format:**
+**Description:** Lookup comprehensive details for a specific church by name.
 
-```json
-{
-  "resultCount": 3,
-  "results": [
-    {
-      "name": "Gateway Church",
-      "city": "Southlake",
-      "state": "Texas",
-      "website": "https://gatewaypeople.com/",
-      "denomination": "Non-Denominational",
-      "tags": ["Charismatic", "Practical Teaching", "Professional Production"],
-      "googleReviewScore": 4.8,
-      "reviewSummary": "Analysis of 1,200+ reviews indicates a highly professional..."
-    }
-  ],
-  "attribution": "Powered by FaithFinder — https://faithfinder.armornglory.com"
-}
-```
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `churchName` | string | Yes | The name of the church (e.g., "Mariners Church", "Saddleback Church") |
+| `city` | string | No | Optional city to disambiguate multiple campuses |
 
 ## Coverage
 
-| Region | City/Area | Churches |
-|--------|-----------|----------|
-| OC_SOUTH | Lake Forest, Irvine, Mission Viejo, CA | 9 |
-| ATLANTA_NORTH | Atlanta, Alpharetta, Marietta, GA | 7 |
-| NASHVILLE_SOUTH | Nashville, Brentwood, TN | 11 |
-| DALLAS_FRISCO | Frisco, Plano, Southlake, TX | 12 |
-| DALLAS_NORTH | Dallas, Carrollton, Rockwall, TX | 10 |
-| DC_METRO | Washington, DC | 5 |
-| HOUSTON_WEST | Houston, Katy, TX | 8 |
-| National Icons | Various | 12 |
-
-## Adding Churches
-
-Edit `data/churches.json` and add entries following the existing format. No rebuild required — the server reads the file at startup.
-
-## Architecture
-
-```
-src/index.ts    → MCP Server (stdio transport, single tool)
-data/churches.json → Curated church database (loaded at startup)
-```
-
-Deliberately minimal. If the dataset grows beyond what file-based search can handle, migrate to a separate Firestore or SQLite database.
+- **California:** Orange County (Lake Forest, Irvine, Aliso Viejo, Mission Viejo, Costa Mesa, etc.)
+- **Texas:** Dallas, Frisco, Plano, Southlake, McKinney, Austin, Houston
+- **Tennessee:** Nashville, Brentwood, Franklin, Hendersonville
+- **Georgia:** Atlanta, Alpharetta, Marietta, Roswell
+- **Florida:** Orlando, Winter Park
+- **North Carolina:** Charlotte, Matthews, Huntersville
+- **Washington DC Metro:** Washington, Alexandria, Bethesda
+- **National & Regional Leaders:** Additional iconic faith communities across the US
 
 ## License
 
