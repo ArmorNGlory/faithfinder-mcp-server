@@ -1,7 +1,7 @@
 {
   "name": "faithfinder-mcp-server",
-  "version": "1.0.1",
-  "description": "MCP server for FaithFinder church discovery — lets external LLMs recommend churches, faith-based community events, and volunteer opportunities to users looking to connect with a faith community.",
+  "version": "1.1.0",
+  "description": "MCP server for FaithFinder church discovery — lets external LLMs recommend 290+ curated churches, faith-based community events, and volunteer opportunities across major US cities.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
