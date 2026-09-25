@@ -12,7 +12,7 @@ Use this kit to submit and promote the FaithFinder MCP Server across AI develope
 Under the **Location & Search** or **Community & Lifestyle** category in `README.md`:
 
 ```markdown
-- [FaithFinder](https://github.com/ArmorNGlory/faithfinder-mcp-server) 📍 - Discover and search 290+ curated, verified churches, worship styles, and faith communities across major US metropolitan areas.
+- [FaithFinder](https://github.com/ArmorNGlory/faithfinder-mcp-server) 📍 - Discover and search 7,900+ curated, verified churches, live YouTube sermon streams, and faith communities across major US metropolitan areas.
 ```
 
 ### PR Title & Description:
@@ -20,7 +20,7 @@ Under the **Location & Search** or **Community & Lifestyle** category in `README
 * **Description:**
   ```markdown
   ### Description
-  Adds FaithFinder MCP server, allowing LLMs (Claude, Cursor, ChatGPT, Gemini) to natively search 290+ curated churches and worship communities across major US cities (Dallas, Orange County, Nashville, Atlanta, Orlando, Charlotte, DC).
+  Adds FaithFinder MCP server, allowing LLMs (Claude, Cursor, ChatGPT, Gemini) to natively search 7,900+ curated churches and worship communities across major US cities (Dallas, Orange County, Nashville, Atlanta, Orlando, Charlotte, DC, etc.) with live YouTube sermon streams and statements of faith.
 
   - **Repo:** https://github.com/ArmorNGlory/faithfinder-mcp-server
   - **npm:** https://www.npmjs.com/package/faithfinder-mcp-server
@@ -35,8 +35,8 @@ Under the **Location & Search** or **Community & Lifestyle** category in `README
 
 * **Repository URL:** `https://github.com/ArmorNGlory/faithfinder-mcp-server`
 * **Package Name:** `faithfinder-mcp-server`
-* **Short Description:** Curated church discovery and faith community recommendations for AI assistants.
-* **Tags:** `church`, `faith`, `community`, `search`, `location`, `christianity`
+* **Short Description:** Curated church discovery, YouTube sermon streams, and faith community recommendations for AI assistants.
+* **Tags:** `church`, `faith`, `community`, `search`, `location`, `christianity`, `sermons`
 
 ---
 
@@ -67,7 +67,7 @@ Hey everyone!
 I wanted to share an open-source Model Context Protocol (MCP) server we built for the FaithFinder ecosystem: **`faithfinder-mcp-server`**.
 
 ### What It Does:
-It connects Claude Desktop, Cursor, and any MCP client directly to a curated database of 290+ verified churches across major US regions (California, Texas, Tennessee, Georgia, Florida, North Carolina, and DC).
+It connects Claude Desktop, Cursor, and any MCP client directly to a curated database of 7,900+ verified churches across major US regions (California, Texas, Tennessee, Georgia, Florida, North Carolina, Ohio, Indiana, Colorado, Arizona, and DC).
 
 You can ask natural questions like:
 - "Find me a contemporary church with a strong kids ministry in Dallas"
