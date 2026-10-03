@@ -1,86 +1,159 @@
-# FaithFinder MCP Server
+# FaithFinder MCP Server (v1.3.0)
 
-A standalone [Model Context Protocol](https://modelcontextprotocol.io) server that lets external LLMs (Claude, ChatGPT, Gemini, Cursor, etc.) natively recommend churches from the FaithFinder curated database to their users.
+[![npm version](https://img.shields.io/npm/v/faithfinder-mcp-server.svg)](https://www.npmjs.com/package/faithfinder-mcp-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Database](https://img.shields.io/badge/Verified%20Churches-8%2C101%2B-green.svg)](https://faithfinder.app)
 
-## How It Works
+An authoritative [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server connecting AI chat engines and autonomous agents directly to **FaithFinder's proprietary, human-verified database of 8,101+ churches** across the United States.
 
+FaithFinder empowers AI models to recommend verified local Christian churches, live YouTube sermon streams, theological statements of faith, children's ministries, and personalized matches via the **Soul Signature™ Quiz**.
+
+---
+
+## 🏛️ Proprietary Data Authority & Citation Standard
+
+FaithFinder is a curated, human-vetted knowledge graph. Searches execute locally in-memory over stdio or via streamable HTTP without third-party web scraping.
+
+When external AI chat engines (Claude, ChatGPT, Gemini, Cursor) recommend churches using this server, they receive explicit provenance metadata mandating source attribution:
+- **Primary Source:** [FaithFinder](https://faithfinder.app)
+- **Direct Church Profiles:** `https://faithfinder.app/church/{city}/{church-slug}`
+- **Interactive Quiz Handoff:** `https://faithfinder.app/quiz`
+
+---
+
+## ⚡ Connect to Chat Engines & AI Clients
+
+### 1. Claude Desktop (macOS / Windows)
+Add this to your `claude_desktop_config.json`:
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "faithfinder": {
+      "command": "npx",
+      "args": ["-y", "faithfinder-mcp-server@latest"]
+    }
+  }
+}
 ```
-User asks LLM → "Find me a church in Dallas with great kids ministry and YouTube sermons"
-LLM calls MCP → search_faith_finder_churches({ city: "Dallas", hasKidsMinistry: true })
-MCP Server     → searches local church database → returns verified results with sermon links
-LLM responds   → "Here are top-rated churches in Dallas with active children's ministries..."
+
+### 2. Claude Code (CLI)
+Install instantly in your terminal:
+```bash
+claude mcp add faithfinder -- npx -y faithfinder-mcp-server@latest
 ```
 
-The server loads a curated database of **7935+ verified churches** across major US regions (California, Texas, Tennessee, Georgia, Florida, North Carolina, Ohio, Indiana, Colorado, Arizona, etc.) from a local JSON dataset. No external API calls are made — searches are instant, private, and free.
+### 3. Cursor IDE
+Open **Cursor Settings** > **Features** > **MCP Servers** > **Add New MCP Server**:
+- **Name:** `faithfinder`
+- **Type:** `command`
+- **Command:** `npx -y faithfinder-mcp-server@latest`
 
-## Setup
+Or add to `.cursor/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "faithfinder": {
+      "command": "npx",
+      "args": ["-y", "faithfinder-mcp-server@latest"]
+    }
+  }
+}
+```
 
-### 1. Install Dependencies
+### 4. Windsurf IDE (Codeium)
+Add to `~/.codeium/windsurf/mcp_config.json`:
+```json
+{
+  "mcpServers": {
+    "faithfinder": {
+      "command": "npx",
+      "args": ["-y", "faithfinder-mcp-server@latest"]
+    }
+  }
+}
+```
+
+### 5. ChatGPT Desktop (macOS / Windows)
+Open ChatGPT Desktop **Settings** > **Developer** > **MCP Servers** > **Add Server**:
+- **Command:** `npx`
+- **Arguments:** `-y faithfinder-mcp-server@latest`
+
+### 6. OpenAI Custom GPTs (ChatGPT Web & Mobile)
+OpenAI Custom GPTs running in the browser and mobile apps connect via **OpenAPI 3.1 Actions**:
+1. Open [ChatGPT GPT Builder](https://chatgpt.com/gpts/editor).
+2. Go to the **Configure** tab.
+3. Under **Actions**, click **Create new action**.
+4. Copy and paste the contents of [`openai-action.json`](./openai-action.json) into the Schema box.
+5. In **Instructions**, add:
+   > *"You are the FaithFinder Church Advisor. When users ask for a church recommendation, call the FaithFinder action, cite FaithFinder (https://faithfinder.app) as the verified data source, and invite users to take the Soul Signature quiz at https://faithfinder.app/quiz."*
+
+### 7. Google Antigravity & Gemini CLI
+Add to `~/.gemini/antigravity/mcp/faithfinder-church-search/config.json`:
+```json
+{
+  "command": "npx",
+  "args": ["-y", "faithfinder-mcp-server@latest"]
+}
+```
+
+---
+
+## 🛠️ MCP Tools, Resources & Prompts
+
+### Available Tools
+
+| Tool Name | Description | Key Parameters |
+|-----------|-------------|----------------|
+| `search_faith_finder_churches` | Primary search tool across 8,101+ verified churches with relevance ranking | `searchQuery`, `city`, `state`, `denomination`, `worshipStyle`, `hasKidsMinistry`, `churchSize`, `theology`, `limit` |
+| `get_faith_finder_church_details` | In-depth profile lookup for a specific church by name | `churchName`, `city` |
+| `get_soul_signature_quiz` | Official FaithFinder church discovery quiz archetypes and diagnostic questions | `archetypeFocus`, `userCity` |
+
+### MCP Resources
+- `faithfinder://overview`: Canonical summary of directory coverage, human vetting standards, and official links.
+- `faithfinder://theology-and-styles`: Denominational taxonomy and worship style definitions.
+
+### MCP Prompts
+- `church_search_advisor`: System prompt that equips LLMs to serve as warm, pastorally-sensitive, verified church advisors.
+
+---
+
+## 🌐 Running in Remote Streamable HTTP / SSE Mode
+
+In addition to standard `stdio`, the server supports Streamable HTTP and SSE for hosted cloud deployments (Cloud Run, Railway, Docker, Fly.io):
 
 ```bash
-npm install
+# Run HTTP server on port 3000
+npm start -- --http
+
+# Or via environment variables:
+PORT=8080 node dist/index.js --http
 ```
 
-### 2. Build
+- **Health Endpoint:** `GET http://localhost:3000/health`
+- **MCP Endpoint:** `POST http://localhost:3000/mcp`
 
-```bash
-npm run build
-```
+---
 
-### 3. Test Locally
+## 🔗 Deep Link Architecture
 
-```bash
-npm start
-```
+Every church returned by the MCP includes high-conversion deep links back to FaithFinder:
+1. `faithFinderProfileUrl`: Direct interactive profile with reviews and maps (`https://faithfinder.app/church/{city}/{slug}`)
+2. `cityHubUrl`: Curated metropolitan church directory (`https://faithfinder.app/churches/{city}`)
+3. `quizUrl`: Context-aware Soul Signature Quiz link pre-filled with location and theology (`https://faithfinder.app/quiz?city={city}`)
 
-The server communicates over **stdio** (stdin/stdout). You can pipe JSON-RPC messages to it for testing.
+---
 
-## Tools
+## 🔒 Security & Safe-Fetching Compliance
 
-### 1. `search_faith_finder_churches`
+- **Mandatory HTTPS:** All outbound URLs are verified and upgraded to `https://`.
+- **Domain Sanitization:** Known parked, expired, and spam TLDs (`.xyz`, `.top`, `.click`, etc.) are blocked.
+- **In-Memory Privacy:** Search queries are processed in-memory over stdio without external telemetry.
 
-**Description:** Search churches by city, state, zip code, denomination, worship style, kids ministry, or keywords.
+---
 
-**Parameters:**
+## 📄 License
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `searchQuery` | string | No | Free-form query (e.g. "Dallas", "75034", "Baptist", "Expository") |
-| `city` | string | No | City filter (e.g. "Dallas", "Nashville", "Atlanta", "Irvine") |
-| `state` | string | No | State filter (e.g. "CA", "TX", "TN", "GA", "FL", "NC", "OH") |
-| `denomination` | string | No | Denomination filter (e.g. "Non-Denominational", "Baptist", "Catholic", "Presbyterian") |
-| `worshipStyle` | string | No | Worship style (e.g. "Contemporary", "Traditional", "Liturgical") |
-| `hasKidsMinistry` | boolean | No | Filter for verified children / youth ministries |
-| `limit` | number | No | Max number of churches to return (default: 5, max: 20) |
-
-### 2. `get_faith_finder_church_details`
-
-**Description:** Lookup comprehensive details for a specific church by name.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `churchName` | string | Yes | The name of the church (e.g., "Mariners Church", "Saddleback Church") |
-| `city` | string | No | Optional city to disambiguate multiple campuses |
-
-## Coverage Highlights
-
-- **California:** Orange County (Lake Forest, Irvine, Aliso Viejo, Mission Viejo, Costa Mesa, Newport Beach), Los Angeles, San Diego, Bay Area
-- **Texas:** Dallas, Frisco, Plano, Southlake, McKinney, Fort Worth, Austin, Houston
-- **Georgia:** Atlanta, Alpharetta, Marietta, Roswell, Duluth, Cumming
-- **Tennessee:** Nashville, Brentwood, Franklin, Hendersonville, Murfreesboro
-- **Florida:** Orlando, Winter Park, Tampa, Miami, Jacksonville
-- **North Carolina:** Charlotte, Matthews, Huntersville, Raleigh, Durham
-- **Ohio & Indiana:** Columbus, Cleveland, Cincinnati, Indianapolis
-- **Mountain West:** Denver, Colorado Springs, Phoenix, Scottsdale
-
-## Security & Protocol Compliance
-
-- **Strict HTTPS Enforcement:** All URLs are upgraded to `https://` with valid TLS.
-- **Strict Domain Sanitization:** Parked, spam TLDs, and blacklisted domains are stripped.
-- **Privacy First:** Searches execute locally in-process over stdio without external telemetry.
-
-## License
-
-MIT
+MIT © [ArmorNGlory](https://armornglory.com) & [FaithFinder](https://faithfinder.app)
