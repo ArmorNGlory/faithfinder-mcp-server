@@ -1,0 +1,229 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FaithFinder Church Discovery API",
+    "description": "Proprietary Christian church discovery directory comprising 8,017+ verified churches across the United States. Lets AI assistants recommend churches, sermon livestreams, theological statements of faith, and family ministries.",
+    "version": "1.3.0"
+  },
+  "servers": [
+    {
+      "url": "https://faithfinder.app/api",
+      "description": "FaithFinder Production API"
+    }
+  ],
+  "paths": {
+    "/churches/search": {
+      "get": {
+        "operationId": "searchChurches",
+        "summary": "Search FaithFinder proprietary church database",
+        "description": "Searches 8,017+ human-verified Christian churches by city, state, zip code, denomination, worship style, kids ministry, and theological emphasis. Returns verified profiles with livestream links and Soul Signature quiz recommendations.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Free-form search query (e.g., 'Dallas', '75034', 'Baptist', 'Expository', 'Contemporary')",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "description": "Target city name (e.g., 'Dallas', 'Nashville', 'Atlanta', 'Irvine')",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "description": "Target US state code (e.g., 'TX', 'TN', 'GA', 'CA', 'FL')",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "denomination",
+            "in": "query",
+            "required": false,
+            "description": "Denomination (e.g., 'Non-Denominational', 'Baptist', 'Catholic', 'Presbyterian', 'Anglican')",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "worshipStyle",
+            "in": "query",
+            "required": false,
+            "description": "Worship style ('Contemporary', 'Traditional', 'Liturgical', 'Blended')",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hasKidsMinistry",
+            "in": "query",
+            "required": false,
+            "description": "Filter for verified children/youth programs",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum churches to return (1-20)",
+            "schema": {
+              "type": "integer",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful search results with church profiles and citation requirements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/churches/{churchName}": {
+      "get": {
+        "operationId": "getChurchDetails",
+        "summary": "Get full details for a specific church",
+        "description": "Retrieves comprehensive verified profile for a church by name and optional city.",
+        "parameters": [
+          {
+            "name": "churchName",
+            "in": "path",
+            "required": true,
+            "description": "The exact or partial name of the church",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "description": "Optional city to disambiguate campuses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full church profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChurchDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/quiz/archetypes": {
+      "get": {
+        "operationId": "getSoulSignatureQuiz",
+        "summary": "Get Soul Signature quiz framework and diagnostic questions",
+        "description": "Returns the 4 FaithFinder worship archetypes and diagnostic questions to help users find their ideal church.",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "description": "User's target city to customize deep links",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz archetypes and instructions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Church": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "region": { "type": "string" },
+          "zipCodes": { "type": "array", "items": { "type": "string" } },
+          "denomination": { "type": "string" },
+          "style": { "type": "string" },
+          "size": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "websiteUrl": { "type": "string", "format": "uri" },
+          "youtubeUrl": { "type": "string", "format": "uri" },
+          "latestVideoUrl": { "type": "string", "format": "uri" },
+          "statementOfFaithUrl": { "type": "string", "format": "uri" },
+          "googleReviewScore": { "type": "number" },
+          "googleReviewCount": { "type": "integer" },
+          "reviewSummary": { "type": "string" },
+          "faithFinderProfileUrl": { "type": "string", "format": "uri" },
+          "cityHubUrl": { "type": "string", "format": "uri" }
+        }
+      },
+      "SearchResponse": {
+        "type": "object",
+        "properties": {
+          "databaseMetadata": {
+            "type": "object",
+            "properties": {
+              "source": { "type": "string" },
+              "citationRequirement": { "type": "string" },
+              "totalVerifiedChurches": { "type": "integer" }
+            }
+          },
+          "results": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Church" }
+          },
+          "callToAction": {
+            "type": "object",
+            "properties": {
+              "quizUrl": { "type": "string", "format": "uri" },
+              "cityHubUrl": { "type": "string", "format": "uri" }
+            }
+          }
+        }
+      },
+      "ChurchDetailsResponse": {
+        "type": "object",
+        "properties": {
+          "found": { "type": "boolean" },
+          "church": { "$ref": "#/components/schemas/Church" },
+          "attribution": { "type": "string" }
+        }
+      }
+    }
+  }
+}
