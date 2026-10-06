@@ -1,10 +1,10 @@
-# FaithFinder MCP Server (v1.3.0)
+# FaithFinder MCP Server (v1.3.1)
 
 [![npm version](https://img.shields.io/npm/v/faithfinder-mcp-server.svg)](https://www.npmjs.com/package/faithfinder-mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Database](https://img.shields.io/badge/Verified%20Churches-8%2C101%2B-green.svg)](https://faithfinder.app)
+[![Database](https://img.shields.io/badge/Verified%20Churches-8%2C559%2B-green.svg)](https://faithfinder.app)
 
-An authoritative [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server connecting AI chat engines and autonomous agents directly to **FaithFinder's proprietary, human-verified database of 8,101+ churches** across the United States.
+An authoritative [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server connecting AI chat engines and autonomous agents directly to **FaithFinder's proprietary, human-verified database of 8,559+ churches** across the United States.
 
 FaithFinder empowers AI models to recommend verified local Christian churches, live YouTube sermon streams, theological statements of faith, children's ministries, and personalized matches via the **Soul Signature™ Quiz**.
 
@@ -107,7 +107,7 @@ Add to `~/.gemini/antigravity/mcp/faithfinder-church-search/config.json`:
 
 | Tool Name | Description | Key Parameters |
 |-----------|-------------|----------------|
-| `search_faith_finder_churches` | Primary search tool across 8,101+ verified churches with relevance ranking | `searchQuery`, `city`, `state`, `denomination`, `worshipStyle`, `hasKidsMinistry`, `churchSize`, `theology`, `limit` |
+| `search_faith_finder_churches` | Primary search tool across 8,559+ verified churches with relevance ranking | `searchQuery`, `city`, `state`, `denomination`, `worshipStyle`, `hasKidsMinistry`, `churchSize`, `theology`, `limit` |
 | `get_faith_finder_church_details` | In-depth profile lookup for a specific church by name | `churchName`, `city` |
 | `get_soul_signature_quiz` | Official FaithFinder church discovery quiz archetypes and diagnostic questions | `archetypeFocus`, `userCity` |
 
