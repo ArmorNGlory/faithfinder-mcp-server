@@ -1,7 +1,7 @@
 {
   "name": "faithfinder-mcp-server",
-  "version": "1.3.2",
-  "description": "MCP server for FaithFinder church discovery — lets external LLMs recommend 8,927+ curated churches, live sermon streams, theological statements of faith, and family ministries across the US.",
+  "version": "1.3.3",
+  "description": "MCP server for FaithFinder church discovery — lets external LLMs recommend 9,033+ curated churches, live sermon streams, theological statements of faith, and family ministries across the US.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
