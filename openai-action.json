@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "FaithFinder Church Discovery API",
-    "description": "Proprietary Christian church discovery directory comprising 8,017+ verified churches across the United States. Lets AI assistants recommend churches, sermon livestreams, theological statements of faith, and family ministries.",
-    "version": "1.3.0"
+    "description": "Proprietary Christian church discovery directory comprising 8,927+ verified churches across the United States. Lets AI assistants recommend churches, sermon livestreams, theological statements of faith, and family ministries.",
+    "version": "1.3.2"
   },
   "servers": [
     {
@@ -16,7 +16,7 @@
       "get": {
         "operationId": "searchChurches",
         "summary": "Search FaithFinder proprietary church database",
-        "description": "Searches 8,017+ human-verified Christian churches by city, state, zip code, denomination, worship style, kids ministry, and theological emphasis. Returns verified profiles with livestream links and Soul Signature quiz recommendations.",
+        "description": "Searches 8,927+ human-verified Christian churches by city, state, zip code, denomination, worship style, kids ministry, and theological emphasis. Returns verified profiles with livestream links and Soul Signature quiz recommendations.",
         "parameters": [
           {
             "name": "q",

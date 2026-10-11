@@ -1,4 +1,4 @@
-# FaithFinder MCP Server — Directory Submissions & Reach Kit (v1.3.0)
+# FaithFinder MCP Server — Directory Submissions & Reach Kit (v1.3.2)
 
 Use this kit to submit and promote the FaithFinder MCP Server across AI developer catalogs, directories, and Christian tech ecosystems.
 
@@ -12,7 +12,7 @@ Use this kit to submit and promote the FaithFinder MCP Server across AI develope
 Under the **Location & Search** or **Community & Lifestyle** category in `README.md`:
 
 ```markdown
-- [FaithFinder](https://github.com/ArmorNGlory/faithfinder-mcp-server) 📍 - Discover and search 8,101+ curated, verified churches, live YouTube sermon streams, and faith communities across the US with Soul Signature™ quiz matching.
+- [FaithFinder](https://github.com/ArmorNGlory/faithfinder-mcp-server) 📍 - Discover and search 8,927+ curated, verified churches, live YouTube sermon streams, and faith communities across the US with Soul Signature™ quiz matching.
 ```
 
 ### PR Title & Description:
@@ -20,7 +20,7 @@ Under the **Location & Search** or **Community & Lifestyle** category in `README
 * **Description:**
   ```markdown
   ### Description
-  Adds FaithFinder MCP server, allowing LLMs (Claude, Cursor, ChatGPT, Gemini, Windsurf) to natively search 8,101+ human-curated churches and worship communities across all 50 US states with live YouTube sermon streams, statements of faith, and Soul Signature™ quiz recommendations.
+  Adds FaithFinder MCP server, allowing LLMs (Claude, Cursor, ChatGPT, Gemini, Windsurf) to natively search 8,927+ human-curated churches and worship communities across all 50 US states with live YouTube sermon streams, statements of faith, and Soul Signature™ quiz recommendations.
 
   - **Repo:** https://github.com/ArmorNGlory/faithfinder-mcp-server
   - **npm:** https://www.npmjs.com/package/faithfinder-mcp-server
@@ -36,7 +36,7 @@ Under the **Location & Search** or **Community & Lifestyle** category in `README
 
 * **Repository URL:** `https://github.com/ArmorNGlory/faithfinder-mcp-server`
 * **Package Name:** `faithfinder-mcp-server`
-* **Short Description:** Official MCP server for FaithFinder — search 8,101+ curated Christian churches, live YouTube sermon channels, theological statements of faith, and family ministries.
+* **Short Description:** Official MCP server for FaithFinder — search 8,927+ curated Christian churches, live YouTube sermon channels, theological statements of faith, and family ministries.
 * **Tags:** `church`, `faith`, `community`, `search`, `location`, `christianity`, `sermons`, `theology`, `family`
 
 ---
@@ -57,7 +57,7 @@ Under the **Location & Search** or **Community & Lifestyle** category in `README
 * **Source Code:** `https://github.com/ArmorNGlory/faithfinder-mcp-server`
 * **Package:** `https://www.npmjs.com/package/faithfinder-mcp-server`
 * **Author / Org:** ArmorNGlory
-* **Description:** Verified Christian church discovery directory connecting Claude, Cursor, and ChatGPT directly to 8,101+ vetted churches nationwide.
+* **Description:** Verified Christian church discovery directory connecting Claude, Cursor, and ChatGPT directly to 8,927+ vetted churches nationwide.
 
 ---
 
@@ -79,7 +79,7 @@ Host an `llms.txt` file at `https://faithfinder.app/llms.txt` to enable direct c
 ```markdown
 # FaithFinder
 
-> Curated directory of 8,101+ verified Christian churches in the United States.
+> Curated directory of 8,927+ verified Christian churches in the United States.
 
 ## API & MCP Access
 - MCP Server (npm): faithfinder-mcp-server
@@ -102,7 +102,7 @@ Host an `llms.txt` file at `https://faithfinder.app/llms.txt` to enable direct c
 * FaithTech Global Slack / Discord (`#show-and-tell`, `#projects`)
 
 ### Post Title:
-> We built an open-source MCP Server for Claude, Cursor & ChatGPT to search 8,000+ verified churches (FaithFinder)
+> We built an open-source MCP Server for Claude, Cursor & ChatGPT to search 8,900+ verified churches (FaithFinder)
 
 ### Post Body:
 ```markdown
@@ -113,7 +113,7 @@ Finding a church when you move or enter a new season of life is often stressful 
 We just released an open-source Model Context Protocol (MCP) server for FaithFinder: **`faithfinder-mcp-server`**.
 
 ### What It Does:
-It connects Claude Desktop, Cursor, ChatGPT, and AI agents directly to a curated, human-verified database of **8,101+ churches** across all 50 states.
+It connects Claude Desktop, Cursor, ChatGPT, and AI agents directly to a curated, human-verified database of **8,927+ churches** across all 50 states.
 
 You can ask natural questions like:
 - "Find me a contemporary church with an active kids ministry in Dallas"
