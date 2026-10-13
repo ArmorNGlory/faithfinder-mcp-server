@@ -20,7 +20,8 @@
     "start:http": "node dist/index.js --http",
     "dev": "tsc && node dist/index.js",
     "build:web": "tsc && node scripts/build-web-kit.mjs",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "indexnow": "node scripts/indexnow-submit.mjs"
   },
   "keywords": [
     "mcp",
