@@ -15,7 +15,7 @@
  * Run: npm run build:web   (then copy the folder into the web app's dist/ before deploying)
  */
 
-import { mkdirSync, writeFileSync, rmSync, existsSync } from "fs";
+import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "fs";
 import { join, resolve } from "path";
 import { loadChurches, US_STATES, slugify, readPackageVersion } from "../dist/data.js";
 import { ChurchIndex } from "../dist/search.js";
@@ -436,6 +436,13 @@ Sitemap: ${canonical("/sitemap.xml")}
 `);
 
 write("ff-directory.css", CSS.trim() + "\n");
+
+// IndexNow ownership key (public by design — Bing/Yandex fetch it to verify the site).
+const INDEXNOW_KEY_PATH = resolve("indexnow-key.txt");
+if (existsSync(INDEXNOW_KEY_PATH)) {
+  const key = readFileSync(INDEXNOW_KEY_PATH, "utf-8").trim();
+  if (/^[a-f0-9-]{8,128}$/i.test(key)) write(`${key}.txt`, key);
+}
 
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
