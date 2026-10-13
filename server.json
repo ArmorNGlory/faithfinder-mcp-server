@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.ArmorNGlory/faithfinder-mcp-server",
   "title": "FaithFinder — Find a Church",
-  "description": "Find a church near you: search 9,000+ US Christian churches by city, ZIP, denomination, worship style and kids ministry.",
+  "description": "Find a church near you: 9,000+ US churches by city, ZIP, denomination, worship style, kids ministry",
   "version": "2.0.0",
   "websiteUrl": "https://faithfinder.armornglory.com",
   "repository": {
