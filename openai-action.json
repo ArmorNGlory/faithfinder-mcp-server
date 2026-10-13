@@ -1,167 +1,69 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "FaithFinder Church Discovery API",
-    "description": "Proprietary Christian church discovery directory comprising 8,927+ verified churches across the United States. Lets AI assistants recommend churches, sermon livestreams, theological statements of faith, and family ministries.",
-    "version": "1.3.2"
+    "title": "FaithFinder Church Finder API",
+    "description": "Find Christian churches across the United States (9,000+ churches, all 50 states + DC) by city, ZIP code, denomination, worship style and kids ministry. Served by the FaithFinder MCP server in HTTP mode (`node dist/index.js --http`). Replace the server URL below with your deployed host, or fetch /openapi.json from the running server, which fills it in automatically when PUBLIC_BASE_URL is set.",
+    "version": "2.0.0"
   },
   "servers": [
     {
-      "url": "https://faithfinder.app/api",
-      "description": "FaithFinder Production API"
+      "url": "https://YOUR-DEPLOYED-HOST/api",
+      "description": "FaithFinder MCP server (HTTP mode) — replace with your Cloud Run / Railway / Fly URL"
     }
   ],
   "paths": {
     "/churches/search": {
       "get": {
-        "operationId": "searchChurches",
-        "summary": "Search FaithFinder proprietary church database",
-        "description": "Searches 8,927+ human-verified Christian churches by city, state, zip code, denomination, worship style, kids ministry, and theological emphasis. Returns verified profiles with livestream links and Soul Signature quiz recommendations.",
+        "operationId": "findChurches",
+        "summary": "Find churches near a location",
+        "description": "Search US churches by natural-language query (e.g. 'family friendly church in Plano TX'), city, state, ZIP, denomination, worship style and kids ministry. Returns church profiles with website, sermon and beliefs links.",
         "parameters": [
-          {
-            "name": "q",
-            "in": "query",
-            "required": false,
-            "description": "Free-form search query (e.g., 'Dallas', '75034', 'Baptist', 'Expository', 'Contemporary')",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "city",
-            "in": "query",
-            "required": false,
-            "description": "Target city name (e.g., 'Dallas', 'Nashville', 'Atlanta', 'Irvine')",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "state",
-            "in": "query",
-            "required": false,
-            "description": "Target US state code (e.g., 'TX', 'TN', 'GA', 'CA', 'FL')",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "denomination",
-            "in": "query",
-            "required": false,
-            "description": "Denomination (e.g., 'Non-Denominational', 'Baptist', 'Catholic', 'Presbyterian', 'Anglican')",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "worshipStyle",
-            "in": "query",
-            "required": false,
-            "description": "Worship style ('Contemporary', 'Traditional', 'Liturgical', 'Blended')",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "hasKidsMinistry",
-            "in": "query",
-            "required": false,
-            "description": "Filter for verified children/youth programs",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "description": "Maximum churches to return (1-20)",
-            "schema": {
-              "type": "integer",
-              "default": 5
-            }
-          }
+          { "name": "q", "in": "query", "required": false, "description": "What the user asked, e.g. 'Reformed church in Nashville' or 'church near 30309'", "schema": { "type": "string" } },
+          { "name": "city", "in": "query", "required": false, "description": "City name, e.g. 'Austin'", "schema": { "type": "string" } },
+          { "name": "state", "in": "query", "required": false, "description": "US state name or 2-letter code, e.g. 'TX'", "schema": { "type": "string" } },
+          { "name": "zip", "in": "query", "required": false, "description": "5-digit ZIP code", "schema": { "type": "string" } },
+          { "name": "denomination", "in": "query", "required": false, "description": "e.g. 'Baptist', 'Catholic', 'Non-Denominational', 'Presbyterian', 'Anglican'", "schema": { "type": "string" } },
+          { "name": "worshipStyle", "in": "query", "required": false, "description": "'Contemporary', 'Traditional', 'Liturgical' or 'Blended'", "schema": { "type": "string" } },
+          { "name": "hasKidsMinistry", "in": "query", "required": false, "description": "Only churches with a kids / family ministry", "schema": { "type": "boolean" } },
+          { "name": "limit", "in": "query", "required": false, "description": "Number of churches to return (1-25)", "schema": { "type": "integer", "default": 5, "minimum": 1, "maximum": 25 } }
         ],
         "responses": {
           "200": {
-            "description": "Successful search results with church profiles and citation requirements",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SearchResponse"
-                }
-              }
-            }
+            "description": "Matching churches",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SearchResponse" } } }
           }
         }
       }
     },
-    "/churches/{churchName}": {
+    "/churches/{church}": {
       "get": {
         "operationId": "getChurchDetails",
-        "summary": "Get full details for a specific church",
-        "description": "Retrieves comprehensive verified profile for a church by name and optional city.",
+        "summary": "Get details for a specific church",
+        "description": "Look up a church by id (from search results, e.g. 'tx/dallas/watermark-community-church') or by name.",
         "parameters": [
-          {
-            "name": "churchName",
-            "in": "path",
-            "required": true,
-            "description": "The exact or partial name of the church",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "city",
-            "in": "query",
-            "required": false,
-            "description": "Optional city to disambiguate campuses",
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "name": "church", "in": "path", "required": true, "description": "Church id or name (URL-encoded)", "schema": { "type": "string" } },
+          { "name": "city", "in": "query", "required": false, "description": "City to pick the right campus when looking up by name", "schema": { "type": "string" } }
         ],
         "responses": {
           "200": {
-            "description": "Full church profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChurchDetailsResponse"
-                }
-              }
-            }
-          }
+            "description": "Church profile",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ChurchDetailsResponse" } } }
+          },
+          "404": { "description": "Church not found" }
         }
       }
     },
     "/quiz/archetypes": {
       "get": {
-        "operationId": "getSoulSignatureQuiz",
-        "summary": "Get Soul Signature quiz framework and diagnostic questions",
-        "description": "Returns the 4 FaithFinder worship archetypes and diagnostic questions to help users find their ideal church.",
+        "operationId": "getChurchMatchQuiz",
+        "summary": "Questions to help someone figure out what kind of church fits them",
         "parameters": [
-          {
-            "name": "city",
-            "in": "query",
-            "required": false,
-            "description": "User's target city to customize deep links",
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "name": "city", "in": "query", "required": false, "description": "User's city, to personalize the quiz link", "schema": { "type": "string" } }
         ],
         "responses": {
           "200": {
-            "description": "Quiz archetypes and instructions",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
+            "description": "Quiz questions, archetypes and quiz link",
+            "content": { "application/json": { "schema": { "type": "object" } } }
           }
         }
       }
@@ -172,22 +74,23 @@
       "Church": {
         "type": "object",
         "properties": {
+          "id": { "type": "string" },
           "name": { "type": "string" },
           "city": { "type": "string" },
           "state": { "type": "string" },
-          "region": { "type": "string" },
+          "stateCode": { "type": "string" },
           "zipCodes": { "type": "array", "items": { "type": "string" } },
           "denomination": { "type": "string" },
           "style": { "type": "string" },
           "size": { "type": "string" },
           "tags": { "type": "array", "items": { "type": "string" } },
-          "websiteUrl": { "type": "string", "format": "uri" },
-          "youtubeUrl": { "type": "string", "format": "uri" },
-          "latestVideoUrl": { "type": "string", "format": "uri" },
-          "statementOfFaithUrl": { "type": "string", "format": "uri" },
-          "googleReviewScore": { "type": "number" },
-          "googleReviewCount": { "type": "integer" },
-          "reviewSummary": { "type": "string" },
+          "websiteUrl": { "type": ["string", "null"], "format": "uri" },
+          "youtubeUrl": { "type": ["string", "null"], "format": "uri" },
+          "latestVideoUrl": { "type": ["string", "null"], "format": "uri" },
+          "statementOfFaithUrl": { "type": ["string", "null"], "format": "uri" },
+          "googleReviewScore": { "type": ["number", "null"] },
+          "googleReviewCount": { "type": ["integer", "null"] },
+          "reviewSummary": { "type": ["string", "null"] },
           "faithFinderProfileUrl": { "type": "string", "format": "uri" },
           "cityHubUrl": { "type": "string", "format": "uri" }
         }
@@ -195,19 +98,18 @@
       "SearchResponse": {
         "type": "object",
         "properties": {
-          "databaseMetadata": {
+          "source": {
             "type": "object",
             "properties": {
-              "source": { "type": "string" },
-              "citationRequirement": { "type": "string" },
-              "totalVerifiedChurches": { "type": "integer" }
+              "name": { "type": "string" },
+              "url": { "type": "string", "format": "uri" },
+              "totalChurches": { "type": "integer" }
             }
           },
-          "results": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/Church" }
-          },
-          "callToAction": {
+          "totalMatches": { "type": "integer" },
+          "notes": { "type": "array", "items": { "type": "string" } },
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Church" } },
+          "links": {
             "type": "object",
             "properties": {
               "quizUrl": { "type": "string", "format": "uri" },
@@ -221,7 +123,7 @@
         "properties": {
           "found": { "type": "boolean" },
           "church": { "$ref": "#/components/schemas/Church" },
-          "attribution": { "type": "string" }
+          "source": { "type": "object" }
         }
       }
     }
