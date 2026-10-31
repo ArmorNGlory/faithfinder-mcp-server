@@ -3,3 +3,4 @@ dist/
 web-kit/
 .env
 service-account.json
+.DS_Store

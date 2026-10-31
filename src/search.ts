@@ -62,6 +62,11 @@ const STYLE_SYNONYMS: Record<string, string[]> = {
   recovery: ["recovery", "celebrate recovery", "addiction"],
 };
 
+const PLACEHOLDER_CITIES = new Set(["local area", "united states", "unknown"]);
+const CHURCH_HEADWORDS_AFTER_CITY =
+  /^\s*(?:church|churches|chapel|cathedral|parish|basilica|abbey|shrine|tabernacle|fellowship|assembly|ministries|ministry|congregation|lutheran|catholic|baptist|presbyterian|methodist|episcopal|anglican|orthodox|pentecostal|apostolic|evangelical|reformed|bible|christian|gospel|mission|temple)\b/;
+const AMBIGUOUS_LOWERCASE_STATE_WORDS = new Set(["in", "or", "me", "hi", "ok", "oh", "la", "pa", "ma", "id", "de"]);
+
 export class ChurchIndex {
   readonly churches: IndexedChurch[];
   readonly byId = new Map<string, IndexedChurch>();
@@ -72,7 +77,9 @@ export class ChurchIndex {
   constructor(churches: IndexedChurch[]) {
     this.churches = churches;
     for (const c of churches) this.byId.set(c.id, c);
-    this.cityKeySet = new Set(churches.map((c) => c.cityKey).filter(Boolean));
+    this.cityKeySet = new Set(
+      churches.map((c) => c.cityKey).filter((k) => Boolean(k) && !PLACEHOLDER_CITIES.has(k))
+    );
     this.cityKeys = [...this.cityKeySet].sort((a, b) => b.length - a.length);
   }
 
@@ -131,17 +138,52 @@ export class ChurchIndex {
 
     if (!city) {
       const normalized = ` ${normalizeCity(text).replace(/,/g, " ")} `;
+      const extractTrailingState = (afterSlice: string): string | null => {
+        const after = afterSlice.match(/^\s*([a-z]{2})\b/);
+        if (!after) return null;
+        const cand = after[1];
+        const upper = cand.toUpperCase();
+        if (!US_STATES[upper]) return null;
+        if (AMBIGUOUS_LOWERCASE_STATE_WORDS.has(cand) && !new RegExp(`\\b${upper}\\b`).test(query)) return null;
+        return upper;
+      };
+
+      // Pass 1: location-anchored city phrases ("in austin tx", "near frisco", "plano tx")
+      // so church names like "St. Paul Lutheran Church in Austin TX" don't hijack the city.
       for (const key of this.cityKeys) {
         if (key.length < 3) continue;
-        if (normalized.includes(` ${key} `)) {
+        const idx = normalized.indexOf(` ${key} `);
+        if (idx < 0) continue;
+        const before = normalized.slice(0, idx + 1);
+        const afterSlice = normalized.slice(idx + key.length + 2);
+        const hasPrep = /\b(?:in|near|around|at|for|to)\s+$/.test(before);
+        const trailingSt = extractTrailingState(afterSlice);
+        if (hasPrep || trailingSt) {
           city = key;
-          text = normalized.replace(` ${key} `, " ");
-          // State code written right after the city: "plano tx with ..." / "austin, tx"
+          text = normalized.slice(0, idx) + " " + afterSlice;
+          if (!stateCode && trailingSt) {
+            stateCode = trailingSt;
+            text = text.replace(new RegExp(`(^|\\s)${trailingSt.toLowerCase()}(?=\\s|$)`), " ");
+          }
+          break;
+        }
+      }
+
+      // Pass 2: unanchored city match, skipping words immediately followed by a church/denomination noun.
+      if (!city) {
+        for (const key of this.cityKeys) {
+          if (key.length < 3) continue;
+          const idx = normalized.indexOf(` ${key} `);
+          if (idx < 0) continue;
+          const afterSlice = normalized.slice(idx + key.length + 2);
+          if (CHURCH_HEADWORDS_AFTER_CITY.test(afterSlice)) continue;
+          city = key;
+          text = normalized.slice(0, idx) + " " + afterSlice;
           if (!stateCode) {
-            const after = normalized.slice(normalized.indexOf(` ${key} `) + key.length + 2).match(/^\s*([a-z]{2})\b/);
-            if (after && US_STATES[after[1].toUpperCase()]) {
-              stateCode = after[1].toUpperCase();
-              text = text.replace(new RegExp(`(^|\\s)${after[1]}(?=\\s|$)`), " ");
+            const trailingSt = extractTrailingState(afterSlice);
+            if (trailingSt) {
+              stateCode = trailingSt;
+              text = text.replace(new RegExp(`(^|\\s)${trailingSt.toLowerCase()}(?=\\s|$)`), " ");
             }
           }
           break;
@@ -214,9 +256,17 @@ export class ChurchIndex {
       narrow(`denomination "${filters.denomination}"`, (c) => !!c.denomination?.some((x) => x.toLowerCase().includes(d)));
     }
     if (filters.worshipStyle) {
-      const w = filters.worshipStyle.toLowerCase();
+      const w = filters.worshipStyle.toLowerCase().trim();
+      const styleAliases: Record<string, string[]> = {
+        contemporary: ["contemporary", "modern"],
+        modern: ["modern", "contemporary"],
+        traditional: ["traditional", "hymn", "classic"],
+        liturgical: ["liturgical", "liturgy", "sacred", "high church"],
+        blended: ["blended"],
+      };
+      const terms = styleAliases[w] ?? [w];
       narrow(`worship style "${filters.worshipStyle}"`, (c) =>
-        !!(c.style?.toLowerCase().includes(w) || c.tags?.some((t) => t.toLowerCase().includes(w))));
+        terms.some((term) => c.style?.toLowerCase().includes(term) || c.tags?.some((t) => t.toLowerCase().includes(term))));
     }
     if (filters.hasKidsMinistry) {
       narrow("kids ministry", (c) => !!c.tags?.some((t) => /kid|child|family|nursery/i.test(t)));

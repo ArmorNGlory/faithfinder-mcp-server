@@ -80,23 +80,42 @@ export function slugify(text: string): string {
 }
 
 export function normalizeCity(city?: string | null): string {
-  return (city || "")
+  let c = (city || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\./g, "")
+    .replace(/['’.]/g, "")
     .replace(/\bsaint\b/g, "st")
+    .replace(/^w\s+/, "west ")
+    .replace(/^ft\s+/, "fort ")
+    .replace(/^mt\s+/, "mount ")
     .replace(/\s+/g, " ")
     .trim();
+  if (c === "new york city" || c === "nyc") c = "new york";
+  return c;
 }
 
-/** Collapse repeated suffix segments: "X - Plano Campus - Plano Campus" -> "X - Plano Campus". */
+/** Collapse repeated suffix segments ("X - Plano Campus", "X Frisco - Frisco Campus") and strip leading emojis/hashtags. */
 export function cleanName(name: string): string {
-  const parts = name.trim().replace(/\s+/g, " ").split(" - ");
+  const stripped = name
+    .replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}\uFE0F#\s]+/u, "")
+    .trim()
+    .replace(/\s+/g, " ");
+  const parts = (stripped || name.trim()).split(" - ");
   const out: string[] = [];
   for (const p of parts) {
     const sofar = out.join(" ").toLowerCase();
-    if (!out.length || !sofar.includes(p.toLowerCase().replace(/\s*campus$/, "").trim() + (p.toLowerCase().endsWith("campus") ? " campus" : ""))) out.push(p);
+    const sofarWords = ` ${sofar.replace(/[^a-z0-9]+/g, " ").trim()} `;
+    const core = p.toLowerCase().replace(/\b(?:main\s+)?campus\b/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+    if (!out.length) {
+      out.push(p);
+    } else if (core && sofarWords.includes(` ${core} `)) {
+      continue;
+    } else if (!core && sofar.includes("campus")) {
+      continue;
+    } else {
+      out.push(p);
+    }
   }
   return out.join(" - ");
 }

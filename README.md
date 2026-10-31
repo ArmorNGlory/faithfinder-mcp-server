@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/faithfinder-mcp-server.svg)](https://www.npmjs.com/package/faithfinder-mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Churches](https://img.shields.io/badge/US%20churches-9%2C000%2B-green.svg)](https://faithfinder.armornglory.com/us/)
+[![Churches](https://img.shields.io/badge/US%20churches-22%2C600%2B-green.svg)](https://faithfinder.armornglory.com/us/)
 [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=faithfinder&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22faithfinder-mcp-server%40latest%22%5D%7D)
 [![Install in Cursor](https://img.shields.io/badge/Cursor-Install-000000?logo=cursor&logoColor=white)](https://cursor.com/en/install-mcp?name=faithfinder&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImZhaXRoZmluZGVyLW1jcC1zZXJ2ZXJAbGF0ZXN0Il19)
 
@@ -14,7 +14,7 @@
 - *"What is Watermark Community Church in Dallas like? Where can I watch their sermons?"*
 - *"I'm not sure what kind of church fits me. Can you help?"*
 
-It searches **9,000+ Christian churches across all 50 states + DC** by city, ZIP code, denomination, worship style, kids/youth ministry, size, and theology. Each result includes the church's website, latest sermon video, statement of faith, Google rating, and a link to its [FaithFinder profile](https://faithfinder.armornglory.com/us/).
+It searches **22,600+ Christian churches across all 50 states + DC** by city, ZIP code, denomination, worship style, kids/youth ministry, size, and theology. Each result includes the church's website, latest sermon video, statement of faith, Google rating, and a link to its [FaithFinder profile](https://faithfinder.armornglory.com/us/).
 
 No API key, no account, and no network calls: the data ships with the package and is searched in memory.
 
@@ -145,6 +145,11 @@ The FaithFinder web app copies `web-kit/` into `dist/` during its build (`script
 - Listings are for discovery. Service times and details can change, so please confirm with the church.
 
 ## Changelog
+
+**2.1.0**
+- Expanded directory from 9,060 to **22,693 US Christian churches** across all 50 states + DC while reducing package download size via compact review summaries.
+- Improved natural-language city parsing (`"St. Paul Lutheran Church in Austin TX"` no longer collides with St. Paul, MN), unified `"New York City"` / `"New York"` records, normalized regional city labels by ZIP code, and mapped `Modern` ↔ `Contemporary` in structured worship-style filters.
+- Upgraded `@modelcontextprotocol/sdk` (`^1.32.1`) and `zod` (`^4.6.7`), added automated unit tests, and added Dependabot configuration.
 
 **2.0.0**
 - Breaking change: tools renamed for discoverability. `search_faith_finder_churches` → `find_churches`, `get_faith_finder_church_details` → `get_church_details`, `get_soul_signature_quiz` → `church_match_quiz`. Added `list_church_coverage`, `search` and `fetch`.

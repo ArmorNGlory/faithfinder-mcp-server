@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "FaithFinder Church Finder API",
-    "description": "Find Christian churches across the United States (9,000+ churches, all 50 states + DC) by city, ZIP code, denomination, worship style and kids ministry. Served by the FaithFinder MCP server in HTTP mode (`node dist/index.js --http`). Replace the server URL below with your deployed host, or fetch /openapi.json from the running server, which fills it in automatically when PUBLIC_BASE_URL is set.",
-    "version": "2.0.0"
+    "description": "Find Christian churches across the United States (22,600+ churches, all 50 states + DC) by city, ZIP code, denomination, worship style and kids ministry. Served by the FaithFinder MCP server in HTTP mode (`node dist/index.js --http`). Replace the server URL below with your deployed host, or fetch /openapi.json from the running server, which fills it in automatically when PUBLIC_BASE_URL is set.",
+    "version": "2.1.0"
   },
   "servers": [
     {
