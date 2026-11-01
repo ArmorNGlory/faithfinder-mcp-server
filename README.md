@@ -146,6 +146,9 @@ The FaithFinder web app copies `web-kit/` into `dist/` during its build (`script
 
 ## Changelog
 
+**2.1.1**
+- Synced all 36 live curated metro/regional church guides (with state-aware city disambiguation), `/styles/*` guides (`liturgical`, `young-adults`, `church-plant`), `/map/`, `/service-times/`, and canonical trailing-slash URLs across MCP tools, resources, and `build:web`.
+
 **2.1.0**
 - Expanded directory from 9,060 to **22,693 US Christian churches** across all 50 states + DC while reducing package download size via compact review summaries.
 - Improved natural-language city parsing (`"St. Paul Lutheran Church in Austin TX"` no longer collides with St. Paul, MN), unified `"New York City"` / `"New York"` records, normalized regional city labels by ZIP code, and mapped `Modern` ↔ `Contemporary` in structured worship-style filters.

@@ -19,7 +19,7 @@ import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "fs";
 import { join, resolve } from "path";
 import { loadChurches, US_STATES, slugify, readPackageVersion } from "../dist/data.js";
 import { ChurchIndex } from "../dist/search.js";
-import { SITE_URL, canonical, churchPath, cityPath, statePath, PERSONA_PAGES, CURATED_CITY_HUBS, REPO_URL, NPM_URL } from "../dist/links.js";
+import { SITE_URL, canonical, churchPath, cityPath, statePath, PERSONA_PAGES, FEATURE_PAGES, CURATED_HUB_METADATA, curatedCityHubInfo, REPO_URL, NPM_URL } from "../dist/links.js";
 import { isSafeAndSecureUrl } from "../dist/security.js";
 
 const args = process.argv.slice(2);
@@ -131,7 +131,7 @@ function page({ path, title, description, h1, lede, crumbs = [], body, schema = 
 ${[breadcrumb, ...schema].filter(Boolean).map(jsonLd).join("\n")}
 </head>
 <body>
-<header><a class="logo" href="/">Faith Finder</a><nav><a href="/us/">Find a church</a><a href="/quiz">Church match quiz</a></nav></header>
+<header><a class="logo" href="/">Faith Finder</a><nav><a href="/us/">Find a church</a><a href="/map/">Map</a><a href="/service-times/">Service times</a><a href="/quiz/">Church match quiz</a></nav></header>
 <main>
 ${crumbs.length ? `<nav class="crumbs" aria-label="Breadcrumb">${crumbs.map((c, i) => (i === crumbs.length - 1 ? esc(c.name) : `<a href="${c.path}">${esc(c.name)}</a>`)).join(" › ")}</nav>` : ""}
 <h1>${esc(h1)}</h1>
@@ -139,7 +139,7 @@ ${lede ? `<p class="lede">${lede}</p>` : ""}
 ${body}
 </main>
 <footer>
-<p><strong>Faith Finder</strong> helps people find a church home — a free directory of ${totalLabel} Christian churches across all 50 US states, plus the free 2-minute <a href="/quiz">Soul Signature church-match quiz</a>. Listings are provided for discovery; service times and details can change, so please confirm with the church before visiting.</p>
+<p><strong>Faith Finder</strong> helps people find a church home — a free directory of ${totalLabel} Christian churches across all 50 US states, plus the free 2-minute <a href="/quiz/">Soul Signature church-match quiz</a>. Listings are provided for discovery; service times and details can change, so please confirm with the church before visiting.</p>
 <p>Use Faith Finder inside AI assistants (ChatGPT, Claude, Gemini, Cursor) with the open-source <a href="${REPO_URL}">FaithFinder MCP server</a>. Updated ${TODAY}.</p>
 </footer>
 </body>
@@ -147,7 +147,7 @@ ${body}
 }
 
 function quizCta(city) {
-  const q = city ? `/quiz?city=${encodeURIComponent(city)}` : "/quiz";
+  const q = city ? `/quiz/?city=${encodeURIComponent(city)}` : "/quiz/";
   return `<div class="cta"><div><strong>Not sure which church fits you?</strong><br>Take the free 2-minute Soul Signature quiz and get churches ranked by worship style, teaching, and family needs.</div><a href="${q}">Take the quiz</a></div>`;
 }
 
@@ -170,8 +170,8 @@ const sitemapUrls = [];
 const addUrl = (path, priority = "0.6") => sitemapUrls.push({ loc: canonical(path), priority });
 
 // Existing SPA marketing routes (from the web app) — keep them in the sitemap.
-for (const p of ["/", "/quiz", "/search"]) addUrl(p, "1.0");
-for (const slug of new Set(Object.values(CURATED_CITY_HUBS))) addUrl(`/churches/${slug}`, "0.8");
+for (const p of ["/", "/quiz/", FEATURE_PAGES.search, FEATURE_PAGES.map, FEATURE_PAGES.serviceTimes]) addUrl(p, "1.0");
+for (const slug of Object.keys(CURATED_HUB_METADATA)) addUrl(`/churches/${slug}/`, "0.8");
 for (const p of Object.values(PERSONA_PAGES)) addUrl(p, "0.7");
 
 // --- Church pages ---------------------------------------------------------
@@ -252,7 +252,7 @@ for (const [code, cities] of tree) {
     const styles = countBy(list, (c) => c.style);
     const kids = list.filter(hasKids);
     const nearby = stateCities.filter((l) => l !== list).slice(0, 12);
-    const hub = CURATED_CITY_HUBS[list[0].cityKey];
+    const hubInfo = curatedCityHubInfo(city, code);
     const topDenoms = denoms.slice(0, 4).map(([d, n]) => `${d} (${n})`).join(", ");
     const description = `Find a church in ${city}, ${code}: ${plural(list.length, "church", "churches")} including ${topDenoms || "many traditions"}. Compare worship style, kids ministry, beliefs, sermons and reviews.`.slice(0, 300);
 
@@ -270,7 +270,7 @@ ${quizCta(city)}
 <ul class="grid">${list.slice(0, 60).map(churchCard).join("")}</ul>
 ${list.length > 60 ? `<h2>More churches in ${esc(city)}</h2><ul class="cols">${list.slice(60).map((c) => `<li><a href="${churchPath(c)}">${esc(c.name)}</a></li>`).join("")}</ul>` : ""}
 ${kids.length && kids.length < list.length ? `<h2>${esc(city)} churches with a kids ministry</h2><ul class="cols">${kids.slice(0, 30).map((c) => `<li><a href="${churchPath(c)}">${esc(c.name)}</a></li>`).join("")}</ul>` : ""}
-${hub ? `<p>Explore the interactive <a href="/churches/${hub}">${esc(city)}-area church guide</a>.</p>` : ""}
+${hubInfo ? `<p>Explore the interactive <a href="/churches/${hubInfo.slug}/">${esc(hubInfo.label)} church guide</a>.</p>` : ""}
 <h2>Frequently asked questions</h2>
 <dl class="faq">${faq.map((f) => `<dt>${esc(f.q)}</dt><dd>${esc(f.a)}</dd>`).join("")}</dl>
 ${nearby.length ? `<h2>Churches in nearby ${esc(stateName)} cities</h2><ul class="cols">${nearby.map((l) => `<li><a href="${cityPath(cityLabel(l), code)}">${esc(cityLabel(l))}</a> (${l.length})</li>`).join("")}</ul>` : ""}
@@ -373,8 +373,13 @@ Each church profile lists location, denomination, worship style, size, ministrie
 
 ## Find a church
 - [Church directory by state and city](${canonical("/us/")}): Browse all ${totalLabel} churches
-- [Soul Signature church-match quiz](${canonical("/quiz")}): Free 2-minute quiz ranking churches by worship style, teaching depth, family needs and community
+- [Interactive church map](${canonical(FEATURE_PAGES.map)}): Browse local churches and Sunday service pins on the map
+- [Local service times & livestream guide](${canonical(FEATURE_PAGES.serviceTimes)}): Morning, late, and livestream worship schedules
+- [Soul Signature church-match quiz](${canonical("/quiz/")}): Free 2-minute quiz ranking churches by worship style, teaching depth, family needs and community
 ${stateEntries.map((s) => `- [Churches in ${s.stateName}](${canonical(statePath(s.code))}): ${s.count.toLocaleString("en-US")} churches`).join("\n")}
+
+## Curated metro & regional guides
+${Object.entries(CURATED_HUB_METADATA).map(([slug, meta]) => `- [${meta.label} church guide](${canonical(`/churches/${slug}/`)})`).join("\n")}
 
 ## Popular cities
 ${topCities.map((e) => `- [Churches in ${e.city}, ${e.code}](${canonical(e.path)}): ${e.list.length} churches`).join("\n")}
@@ -386,6 +391,7 @@ ${topCities.map((e) => `- [Churches in ${e.city}, ${e.code}](${canonical(e.path)
 - [Safe-haven churches for healing and recovery](${canonical(PERSONA_PAGES.safeHaven)})
 - [Liturgical churches](${canonical(PERSONA_PAGES.liturgical)})
 - [Churches for young adults](${canonical(PERSONA_PAGES.youngAdults)})
+- [Intimate church plants & micro-churches](${canonical(PERSONA_PAGES.churchPlant)})
 
 ## For AI assistants & developers
 - [FaithFinder MCP server (GitHub)](${REPO_URL}): Open-source Model Context Protocol server — tools: find_churches, get_church_details, church_match_quiz, list_church_coverage, search, fetch

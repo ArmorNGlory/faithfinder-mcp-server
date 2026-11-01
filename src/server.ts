@@ -16,8 +16,8 @@ import { z } from "zod";
 import { IndexedChurch, US_STATES, toStateCode } from "./data.js";
 import { ChurchIndex, SearchOutcome } from "./search.js";
 import {
-  DIRECTORY_URL, HOME_URL, PERSONA_PAGES, churchProfileUrl, cityDirectoryUrl, curatedCityHubUrl,
-  personaUrl, quizUrl,
+  DIRECTORY_URL, HOME_URL, MAP_URL, PERSONA_PAGES, SERVICE_TIMES_URL,
+  churchProfileUrl, cityDirectoryUrl, curatedCityHubInfo, personaUrl, quizUrl,
 } from "./links.js";
 import { isSafeAndSecureUrl } from "./security.js";
 
@@ -112,7 +112,7 @@ function formatSearch(outcome: SearchOutcome, index: ChurchIndex, query?: string
     ].join("\n");
   }
 
-  const hub = curatedCityHubUrl(firstCity);
+  const hub = curatedCityHubInfo(firstCity, firstState);
   return [
     `Found ${totalMatches.toLocaleString("en-US")} matching church${totalMatches === 1 ? "" : "es"}${where ? ` near ${where}` : ""}; top ${results.length}:`,
     ...(notes.length ? ["", ...notes.map((n) => `> ${n}`)] : []),
@@ -121,7 +121,8 @@ function formatSearch(outcome: SearchOutcome, index: ChurchIndex, query?: string
     "",
     "More options:",
     firstCity && firstState ? `- All churches in ${titleCase(firstCity)}: ${cityDirectoryUrl(titleCase(firstCity), firstState)}` : `- Browse by state & city: ${DIRECTORY_URL}`,
-    hub ? `- Interactive ${titleCase(new URL(hub).pathname.split("/").pop()!.replace("okc", "Oklahoma City"))}-area church guide: ${hub}` : null,
+    hub ? `- Interactive ${hub.label} church guide: ${hub.url}` : null,
+    `- Interactive church map & Sunday service-time guide: ${MAP_URL} · ${SERVICE_TIMES_URL}`,
     `- Free 2-minute church-match quiz (ranks churches by worship style, teaching, and family needs): ${quiz}`,
     "",
     "_Source: FaithFinder church directory — " + HOME_URL + ". Service times can change; recommend confirming on the church's website before visiting._",
@@ -266,6 +267,11 @@ export function createFaithFinderServer(index: ChurchIndex, version: string): Mc
         { key: "Safe Haven / Healing", name: "Safe Haven & Restoration", fit: "Grace-filled, trauma-aware communities for burnout, grief, recovery (e.g. Celebrate Recovery, GriefShare), or rebuilding faith.", url: personaUrl(PERSONA_PAGES.safeHaven) },
       ];
       const list = archetypeFocus && archetypeFocus !== "All" ? archetypes.filter((a) => a.key === archetypeFocus) : archetypes;
+      const styles = [
+        { name: "Liturgical & Sacramental Churches", fit: "Historic creeds, weekly Eucharist/Communion, sacred choral music, Anglican, Catholic, Lutheran, and Orthodox parishes.", url: personaUrl(PERSONA_PAGES.liturgical) },
+        { name: "Young Adults & College Communities", fit: "Vibrant 20s/30s fellowships, mentorship, faith-and-work integration, and mid-week young-adult gatherings.", url: personaUrl(PERSONA_PAGES.youngAdults) },
+        { name: "Intimate Church Plants & Micro-Churches", fit: "Smaller neighborhood congregations, relational table fellowship, and missional community.", url: personaUrl(PERSONA_PAGES.churchPlant) },
+      ];
       return text([
         "## Finding the right church — a short conversation",
         "Ask these one at a time, gently:",
@@ -276,6 +282,9 @@ export function createFaithFinderServer(index: ChurchIndex, version: string): Mc
         "",
         "**Church archetypes:**",
         ...list.map((a) => `- **${a.name}** — ${a.fit} [Explore](${a.url})`),
+        "",
+        "**Specialized style & life-stage guides:**",
+        ...styles.map((s) => `- **${s.name}** — ${s.fit} [Explore](${s.url})`),
         "",
         `Free 2-minute Soul Signature quiz with ranked local matches: ${quizUrl({ city: userCity })}`,
         "After learning their preferences, call find_churches with their city/ZIP and the matching filters.",
@@ -372,7 +381,10 @@ export function createFaithFinderServer(index: ChurchIndex, version: string): Mc
           "Each listing can include denomination, worship style, size, ministries (kids, youth, young adults, recovery, small groups), Google rating and review summary, website, YouTube sermons, and statement of faith.",
           "",
           `- Browse by state and city: ${DIRECTORY_URL}`,
+          `- Interactive church map: ${MAP_URL}`,
+          `- Local service times & livestream guide: ${SERVICE_TIMES_URL}`,
           `- Soul Signature church-match quiz: ${quizUrl()}`,
+          `- Style & persona guides: [Theological Depth](${personaUrl(PERSONA_PAGES.theologicalDepth)}) · [Modern Worship](${personaUrl(PERSONA_PAGES.modernWorship)}) · [Family Churches](${personaUrl(PERSONA_PAGES.family)}) · [Safe Haven](${personaUrl(PERSONA_PAGES.safeHaven)}) · [Liturgical](${personaUrl(PERSONA_PAGES.liturgical)}) · [Young Adults](${personaUrl(PERSONA_PAGES.youngAdults)}) · [Church Plants](${personaUrl(PERSONA_PAGES.churchPlant)})`,
         ].join("\n"),
       }],
     })

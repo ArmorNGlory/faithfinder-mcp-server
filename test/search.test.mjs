@@ -8,6 +8,16 @@ import { loadChurches, normalizeCity, cleanName, readPackageVersion } from "../d
 import { ChurchIndex } from "../dist/search.js";
 import { isSafeAndSecureUrl } from "../dist/security.js";
 import { createFaithFinderServer } from "../dist/server.js";
+import {
+  CURATED_HUB_METADATA,
+  FEATURE_PAGES,
+  MAP_URL,
+  PERSONA_PAGES,
+  SERVICE_TIMES_URL,
+  curatedCityHubInfo,
+  personaUrl,
+  quizUrl,
+} from "../dist/links.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const churches = loadChurches();
@@ -94,10 +104,13 @@ test("search returns accurate NYC, Heartland flagship, and Modern/Contemporary r
 
 test("version metadata is aligned across package.json, server.json, and openai-action.json", () => {
   const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf-8"));
+  const lock = JSON.parse(readFileSync(join(ROOT, "package-lock.json"), "utf-8"));
   const srv = JSON.parse(readFileSync(join(ROOT, "server.json"), "utf-8"));
   const oai = JSON.parse(readFileSync(join(ROOT, "openai-action.json"), "utf-8"));
 
   assert.equal(pkg.version, readPackageVersion());
+  assert.equal(lock.version, pkg.version);
+  assert.equal(lock.packages[""].version, pkg.version);
   assert.equal(srv.version, pkg.version);
   assert.equal(srv.packages[0].version, pkg.version);
   assert.ok(srv.description.length <= 100, `server.json description exceeds 100 chars (${srv.description.length})`);
@@ -105,4 +118,34 @@ test("version metadata is aligned across package.json, server.json, and openai-a
 
   const mcp = createFaithFinderServer(index, pkg.version);
   assert.ok(mcp);
+});
+
+test("live website links: 36 curated metro hubs, state disambiguation, and canonical trailing slashes", () => {
+  assert.equal(Object.keys(CURATED_HUB_METADATA).length, 36);
+
+  assert.equal(curatedCityHubInfo("Arlington", "TX")?.slug, "dallas");
+  assert.equal(curatedCityHubInfo("Arlington", "VA")?.slug, "dc");
+  assert.equal(curatedCityHubInfo("Arlington", "MA")?.slug, "boston");
+  assert.equal(curatedCityHubInfo("Portland", "OR")?.slug, "portland");
+  assert.equal(curatedCityHubInfo("Portland", "ME"), null);
+  assert.equal(curatedCityHubInfo("Brandon", "FL")?.slug, "tampa");
+  assert.equal(curatedCityHubInfo("Brandon", "MS"), null);
+  assert.equal(curatedCityHubInfo("Bakersfield", "CA")?.slug, "california");
+  assert.equal(curatedCityHubInfo("St. Louis", "MO")?.slug, "st-louis");
+
+  const urlsToCheck = [
+    MAP_URL,
+    SERVICE_TIMES_URL,
+    quizUrl({ city: "Austin" }),
+    curatedCityHubInfo("Dallas", "TX").url,
+    ...Object.values(PERSONA_PAGES).map((p) => personaUrl(p)),
+  ];
+  for (const u of urlsToCheck) {
+    const parsed = new URL(u);
+    assert.equal(parsed.origin, "https://faithfinder.armornglory.com");
+    assert.ok(parsed.pathname.endsWith("/"), `Expected canonical trailing slash on ${u}`);
+  }
+  for (const p of Object.values(FEATURE_PAGES)) {
+    assert.ok(p.endsWith("/"), `Expected trailing slash on feature path ${p}`);
+  }
 });

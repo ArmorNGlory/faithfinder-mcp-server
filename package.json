@@ -1,6 +1,6 @@
 {
   "name": "faithfinder-mcp-server",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "mcpName": "io.github.ArmorNGlory/faithfinder-mcp-server",
   "description": "Find a church near you from any AI assistant. MCP server for FaithFinder: search 22,600+ US Christian churches by city, ZIP, denomination, worship style and kids ministry, with beliefs, sermons and reviews.",
   "type": "module",
